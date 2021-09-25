@@ -71,9 +71,18 @@ class CryptoIncApplicationTests {
     @Test
     @DisplayName("When LiveOrderBoard are requested then they are all returned")
     void getLiveOrderBoardTest() throws Exception {
-        mockMvc.perform(get("/api/v1/liveorderboard"))
-                .andExpect(status().is2xxSuccessful())
-                .andExpect(jsonPath("$", hasSize((int) orderRepository.getLiveOrderBoardConditional().size())));
+
+        var result = mockMvc.perform(get("/api/v1/liveorderboard"));
+
+        result.andExpect(status().is2xxSuccessful());
+
+        var lobRepositorySize = orderRepository.getLiveOrderBoardConditional().size();
+
+        if (lobRepositorySize > 10) {
+            result.andExpect(jsonPath("$", hasSize(10)));
+        } else {
+            result.andExpect(jsonPath("$", hasSize(lobRepositorySize)));
+        }
     }
 
     @Test
